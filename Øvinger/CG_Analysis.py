@@ -1,73 +1,70 @@
 import numpy as np, scipy.sparse as ss, matplotlib.pyplot as plt
+from matplotlib import rcParams
 
-def simulation(N,M):
-    K=np.empty((len(N), len(M)))
+
+def simulation(N, M):
+    K = np.empty((len(N), len(M)))
     for i, n in enumerate(N):
-        A=ss.diags([1,-2,8,-2,1], [-2,-1,0,1,2], shape=(n,n)).todense()
-        #print(A)
-        I=np.eye(n)
-        b=np.random.rand(n).reshape((n,1))
-        e=np.ones_like(b)
-        for j,m in enumerate(M):
-            k=conjugateGradient(A+m*I,b, e)
-            K[i,j]=k
+        A = ss.diags([1, -2, 8, -2, 1], [-2, -1, 0, 1, 2], shape=(n, n)).toarray()
+        I = np.eye(n)
+        b = np.random.rand(n)
+        e = np.ones_like(b)
+        for j, m in enumerate(M):
+            k = conjugateGradient(A + m * I, b, e)
+            #k = conjugateGradient(A + m * I, b, e, I)
+            K[i, j] = k
     return K
 
-"""
-def conjugateGradient(A,b,x0,P,TOL=1E-15):
-    n=len(b)
-    #print(b, A.dot(x0))
-    r=b-A@x0
-    #print(P.shape, r.shape)
-    p=z=np.linalg.solve(P,r)
-    #print(z.shape)
+'''
+def conjugateGradient(A, b, x0, P, TOL=1E-15):  # Conditioned, need P as input
+    n = len(b)
+    r = b - A @ x0
+    p = z = np.linalg.solve(P, r)
     for k in range(n):
-        rdotz=r.T@z
-        Ap=A@p
-        alpha=np.asscalar(rdotz/p.T@(Ap))
-        x1=x0+alpha*p
-        if np.linalg.norm(x1-x0,np.inf)<=TOL:
-            return k+1
-        x0=x1
-        r-=alpha*Ap
-        z=np.linalg.solve(P,r)
-        beta=np.asscalar(r.T@z/rdotz)
-        p=z+beta*p
-    return k+1
-"""
+        rdotz = r.dot(z)
+        Ap = A @ p
+        alpha = rdotz / (p.dot(Ap))
+        x1 = x0 + alpha * p
+        if np.linalg.norm(x1 - x0, np.inf) <= TOL:
+            return k + 1
+        x0 = x1
+        r -= alpha * Ap
+        z = np.linalg.solve(P, r)
+        beta = r.dot(z) / rdotz
+        p = z + beta * p
+    return k + 1
+'''
 
-
-def conjugateGradient(A,b,x0,TOL=1E-15):
-    n=len(b)
-    #print(b, A.dot(x0))
-    r=b-A@x0
-    #print(P.shape, r.shape)
-    p=r
-    #print(z.shape)
+def conjugateGradient(A, b, x0, TOL=1E-15):   #Non-conditioned
+    n = len(b)
+    p= r = b - A@x0
     for k in range(n):
-        rdotp=r.T@p
-        Ap=A@p
-        alpha=np.asscalar(rdotp/p.T@(Ap))
-        x1=x0+alpha*p
-        temp=np.linalg.norm(x1-x0,np.inf)
-        #print(temp)
-        if temp<=TOL:
-            return k+1
-        x0=x1
-        r-=alpha*Ap
-        beta=np.asscalar(r.T@Ap/rdotp)
-        p=r-beta*p
-    return k+1
-
+        rdotp = r.dot(p)
+        Ap = A@p
+        pAdotp= p.dot(Ap)
+        alpha = rdotp /pAdotp
+        x1 = x0 + alpha * p
+        if np.linalg.norm(x1 - x0, np.inf) <= TOL:
+            return k + 1
+        x0 = x1
+        r -= alpha * Ap
+        beta = r.dot(Ap) / pAdotp
+        p = r - beta * p
+    return k + 1
 
 
 def plotIterations(K,N,M):
-    %matplotlib qt
-    fig, axes=plt.subplots(2,3, sharey=True)
-    plt.rcParams['axes.grid'] = True
-    for i in range(2):
-        for j in range(3):
-            axes[i,j].plot(M,K[i+j])
+    #%matplotlib qt
+    rcParams.update({'axes.grid': True, 'legend.fontsize': 18, 'legend.handlelength': 2,
+                     'axes.labelsize': 18, 'axes.titlesize': 18, 'figure.figsize': (16, 8)})
+
+    colors=rcParams['axes.prop_cycle'].by_key()['color']
+    fig, axes=plt.subplots(2,3)
+    plt.tight_layout()
+    for k in range(6):
+        i, j = k % 2, k % 3
+        axes[i,j].plot(M, K[k], label=r'$n=%d$'%N[k], color=colors[k])
+        axes[i,j].legend(loc='best')
 
     #plt.savefig('CG_Analysis', format='png')
     plt.show()
