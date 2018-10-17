@@ -15,7 +15,7 @@ import Agrad as A
 # Train(M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau):
 
 n = 10
-M = 2
+M = 10
 
 Y0, C = mcp.YC(n, 50, False)
 K = np.full((M,4,4), np.identity(4), dtype=float)
@@ -37,8 +37,8 @@ OFargs = (M, h, K, Y0, sigma, eta, C, W)
 GCargs = (M, h, K, Y0, sigma, eta, C, W, eps)
 Targs = (M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau)
 
-#K, W = T.Train(*Targs)
-A.Wgrad(*Targs)
+K, W = T.Train(*Targs)
+#A.Wgrad(*Targs)
 
 n = 100
 Y0, C = mcp.YC(n, 50, False)
