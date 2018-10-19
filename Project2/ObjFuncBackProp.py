@@ -22,7 +22,6 @@ def ObjFuncAndBackProp(M, h, K, Y0, sigma, eta, C, W):
     dJ = np.zeros((M, 4, 4))
     dY_upstream = dYM
     for i in range(len(Y_list)-2, -1, -1):
-        #dJ[i] = (Y_list[i] * dY_upstream).T.dot(h * (1 - sigma_list[i]**2))
         dJ[i] = Y_list[i].T.dot(h * (1 - sigma_list[i] ** 2) * dY_upstream)
-        dY_upstream = np.array(np.matrix(h * (1 - sigma_list[i]**2) * dY_upstream) * np.matrix(K[i].T)) + dY_upstream
+        dY_upstream = np.dot((h * (1 - sigma_list[i] ** 2) * dY_upstream) ,K[i].T) + dY_upstream
     return error, dJ, dW
