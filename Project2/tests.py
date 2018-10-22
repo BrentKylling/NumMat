@@ -9,25 +9,18 @@ import Train as T
 import Agrad as A
 import matplotlib.pyplot as plt
 
-
-# Euler(M, h, K, Y0, sigma)
-# ObjFunc(M, h, K, Y0, sigma, eta, C, W)
-# GradCalc(M, h, K, Y0, sigma, eta, C, W, eps)
-# Train(M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau):
-
 n = 10
-M = 3
+M = 1
 
+#self-made function, to get data into useful shape
 Y0, C = mcp.YC(n, 50, False)
 K = np.full((M,4,4), np.identity(4), dtype=float)
 W = np.ones(4)
 eps = 0.005
 tau = 0.001
 h = 1
-#TOL = 0.01
-#depending on n
+#tolerance depending on n
 TOL = 0.01 * n
-
 
 def eta(x):
     return np.exp(x)/(np.exp(x) + 1)
@@ -47,10 +40,10 @@ def get_accuracy(YM, W):
     guess = np.around(projv)
     diff = guess - C
     wrong_guesses = np.count_nonzero(diff)
-    accuracy = (1 - wrong_guesses / (2 * n))
+    accuracy = (1 - wrong_guesses / n)
     return accuracy
 
-
+#arguments
 Eargs = (M, h, K, Y0, sigma)
 OFargs = (M, h, K, Y0, sigma, eta, C, W)
 GCargs = (M, h, K, Y0, sigma, eta, C, W, eps)
@@ -58,9 +51,6 @@ Targs = (M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau)
 
 K, W, res_list = T.Train(*Targs)
 res_plot(res_list)
-
-#A.Wgrad(*Targs)
-
 
 #Training data accuracy
 YM = E.Euler(M, h, K, Y0, sigma)
