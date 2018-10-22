@@ -1,6 +1,8 @@
 import numpy as np
 import ObjFunc as OF
 
+#this is the numerical calculation of the gradients, as proposed in the problem sheet
+
 def GradCalc(M, h, K, Y0, sigma, eta, C, W, eps):
     dJ = np.zeros((M, 4, 4))
     j1 = OF.ObjFunc(M, h, K, Y0, sigma, eta, C, W)
