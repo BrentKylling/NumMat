@@ -9,6 +9,10 @@ v_t_K = 0
 m_t_W = 0
 v_t_W = 0
 
+def SGD_update(x, dx, tau):
+    return x - tau * dx
+
+
 def adam_update(value, g_t, t, m_t_old, v_t_old):
     t += 1
     alpha = 0.0001
@@ -23,7 +27,7 @@ def adam_update(value, g_t, t, m_t_old, v_t_old):
     return value
 
 
-def Train(M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau, gradient_variant=1, update_variant=1, max_step=100000):
+def Train(M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau, gradient_variant=1, update_variant=0, max_step=100000):
     res = np.inf
     res_list = []
     count = 0
@@ -39,8 +43,8 @@ def Train(M, h, K, Y0, sigma, eta, C, W, eps, TOL, tau, gradient_variant=1, upda
         #Updates
         #Stochastic gradient descent (as proposed in the problem sheet)
         if update_variant == 0:
-            K -= tau * dJ
-            W -= tau * dW
+            K = SGD_update(K, dJ, tau)
+            W = SGD_update(W, dW, tau)
 
         #Adam updates
         if update_variant == 1:
