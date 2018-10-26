@@ -138,11 +138,11 @@ def gendist(P,N,M,PLOT,NAME):
     return T
 
 def YC(n, nx, bool):
-    data, problem = make_circle_problem(n, nx, bool)
-    Y0 = np.zeros((2*n, 4))
+    data, problem = make_circle_problem(int(n/2), nx, bool)
+    Y0 = np.zeros((n, 4))
     Y0[..., 0:2] = np.array([data['x']])
     C = np.array([data['y']])
-    C = np.reshape(C, (2*n))-1
+    C = np.reshape(C, n)-1
     return Y0, C
 
 if __name__=='__main__':
